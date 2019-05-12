@@ -73,24 +73,27 @@ public class MainActivity extends BaseActivity {
                                  * - 해당 과정에서 필요한 라이브러리 있다면 검색해서 활용
                                  *
                                  */
-                                String name = user.getString("name");
-                                int balance = user.getInt("balance");
+                                String userName = user.getString("name");
+                                int userBalance = user.getInt("balance");
                                 String userImgUrl = user.getString("profile_image");
                                 String bankName = bankCode.getString("name");
                                 String bankImgUrl = bankCode.getString("logo");
                                 String billingAccount = user.getString("billing_account");
 
+                                // 프로필
                                 Glide.with(mContext).load(userImgUrl).into(act.usrImgV);
-                                act.bankAddr.setText(billingAccount);
 
+                                // 접속자명
+                                act.usrNm.setText(userName);
+                                // 보유 잔액
+                                act.bankTotal.setText(String.format("%,d P", userBalance) );
+
+                                // 은행 이미지
                                 Glide.with(mContext).load(bankImgUrl).into(act.bankImgV);
-
+                                // 은행명
                                 act.bankNm.setText(bankName);
-
-                                act.bankTotal.setText(String.format("%,d", balance) );
-
-                                act.usrNm.setText(name);
-
+                                // 계좌 번호
+                                act.bankAddr.setText(billingAccount);
 
                             }else{
 
