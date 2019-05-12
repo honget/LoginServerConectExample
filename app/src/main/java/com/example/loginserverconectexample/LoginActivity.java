@@ -53,7 +53,6 @@ public class LoginActivity extends BaseActivity {
                 String pw = act.pwdTxtV.getText().toString();
 
                 ContextUtill.setUserInputId(mContext, id);
-                ContextUtill.setUserInputPw(mContext, pw);
 
                 CommectSever.postRequestSingIn(mContext, id, pw, new CommectSever.JsonResponsHandler() {
                     @Override
@@ -70,11 +69,12 @@ public class LoginActivity extends BaseActivity {
                                     if( code == 200 ){
                                         // 로그인 성공
 
+                                        JSONObject data = json.getJSONObject("data");
+                                        String token = data.getString("token");
+
+
                                         //자동 로그인 체크 확인
                                         if(act.autoLginChkB.isChecked()){
-
-                                            JSONObject data = json.getJSONObject("data");
-                                            String token = data.getString("TOKEN");
 
                                             //자동 로그인 토큰 저장
                                             ContextUtill.setUserToken(mContext, token);
@@ -114,10 +114,11 @@ public class LoginActivity extends BaseActivity {
     public void setValues() {
 
         String savedUserId = ContextUtill.getUserInputId(mContext);
-        String savedUserPw = ContextUtill.getUserInputPw(mContext);
 
         act.idTxtV.setText(savedUserId);
-        act.pwdTxtV.setText(savedUserPw);
+
+        String userToken = ContextUtill.getUserToken(mContext);
+        Log.d("저장된 토큰 값", String.format("값은 %s",userToken));
 
     }
 

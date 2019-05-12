@@ -21,7 +21,7 @@ android {
         }
     }
     dataBinding {
-        enabled=true
+        enabled = true
     }
 }
 
@@ -34,4 +34,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation "com.squareup.okhttp3:okhttp:3.14.1"
+    implementation 'de.hdodenhof:circleimageview:3.0.0'
 }
