@@ -1,8 +1,9 @@
 package com.example.loginserverconectexample;
 
+import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.telecom.ConnectionService;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 
@@ -10,6 +11,7 @@ import com.example.loginserverconectexample.databinding.ActivityLoginBinding;
 import com.example.loginserverconectexample.utills.CommectSever;
 import com.example.loginserverconectexample.utills.ContextUtill;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LoginActivity extends BaseActivity {
@@ -28,7 +30,6 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void setupEvents() {
-
 
         act.singBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,8 +58,52 @@ public class LoginActivity extends BaseActivity {
                 CommectSever.postRequestSingIn(mContext, id, pw, new CommectSever.JsonResponsHandler() {
                     @Override
                     public void onResponse(JSONObject json) {
+
                         Log.d("결과", json.toString());
 
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    int code = json.getInt("code");
+
+                                    if( code == 200 ){
+                                        // 로그인 성공
+
+                                        //자동 로그인 체크 확인
+                                        if(act.autoLginChkB.isChecked()){
+
+                                            JSONObject data = json.getJSONObject("data");
+                                            String token = data.getString("TOKEN");
+
+                                            //자동 로그인 토큰 저장
+                                            ContextUtill.setUserToken(mContext, token);
+
+
+
+                                        }
+
+                                    } else {
+                                      // 로그인 실패 원인 리턴
+
+                                        AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+
+                                        alert.setTitle("로그인 실패 알림");
+                                        alert.setMessage(json.getString("message"));
+                                        alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                act.pwdTxtV.setText("");
+                                            }
+                                        });
+                                        alert.show();
+                                    }
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
                     }
                 });
             }
