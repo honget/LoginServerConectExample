@@ -3,8 +3,6 @@ package com.example.loginserverconectexample.utills;
 import android.content.Context;
 import android.util.Log;
 
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -135,12 +133,12 @@ public class CommectSever {
          */
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            public void onFailure(Call call, IOException e) {
 
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            public void onResponse( Call call, Response response) throws IOException {
 
                 String responseContext = response.body().string();
 
