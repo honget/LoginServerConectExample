@@ -1,13 +1,115 @@
 package com.example.loginserverconectexample;
 
+import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
-public class MainActivity extends AppCompatActivity {
+import com.bumptech.glide.Glide;
+import com.example.loginserverconectexample.databinding.ActivityMainBinding;
+import com.example.loginserverconectexample.utills.CommectSever;
+import com.example.loginserverconectexample.utills.ContextUtill;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class MainActivity extends BaseActivity {
+
+    ActivityMainBinding act;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        bindViews();
+        setValues();
+        setupEvents();
+    }
+
+    @Override
+    public void setupEvents() {
+
+    }
+
+    @Override
+    public void setValues() {
+
+        //로그인에 성공한 사람의 토큰을 받아오기
+        String token = getIntent().getStringExtra("USER_TOKEN");
+
+        Log.d("사용자 토큰 정보", token);
+
+        //받아온 토큰을 가지고 /v2/me_info API 에서 사용자 데이터 조회 및 표시
+
+        CommectSever.getRequestMyInfo(mContext, token, new CommectSever.JsonResponsHandler() {
+            @Override
+            public void onResponse(JSONObject json) {
+
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+
+                        try {
+                            int code = json.getInt("code");
+
+                            if(code == 200){
+
+                                // 정상 수신
+
+                                JSONObject data = json.getJSONObject("data");
+
+                                JSONObject user = data.getJSONObject("user");
+                                JSONObject bankCode = user.getJSONObject("bank_code");
+
+                                /**
+                                 * 연습 문제 1
+                                 *
+                                 * -로그인 me info 호출 완료
+                                 * 해당 값으로 값 파싱
+                                 *
+                                 * 응용 문제
+                                 * - 해당 과정에서 필요한 라이브러리 있다면 검색해서 활용
+                                 *
+                                 */
+                                String name = user.getString("name");
+                                int balance = user.getInt("balance");
+                                String userImgUrl = user.getString("profile_image");
+                                String bankName = bankCode.getString("name");
+                                String bankImgUrl = bankCode.getString("logo");
+                                String billingAccount = user.getString("billing_account");
+
+                                Glide.with(mContext).load(userImgUrl).into(act.usrImgV);
+                                act.bankAddr.setText(billingAccount);
+
+                                Glide.with(mContext).load(bankImgUrl).into(act.bankImgV);
+
+                                act.bankNm.setText(bankName);
+
+                                act.bankTotal.setText(String.format("%,d", balance) );
+
+                                act.usrNm.setText(name);
+
+
+                            }else{
+
+                                // 연동 비정상
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+            }
+        });
+
+    }
+
+    @Override
+    public void bindViews() {
+        act = DataBindingUtil.setContentView(this, R.layout.activity_main);
     }
 }

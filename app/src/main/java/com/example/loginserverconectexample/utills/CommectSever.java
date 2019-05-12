@@ -164,4 +164,72 @@ public class CommectSever {
 
     }
 
+
+    /**
+     * 은행 정보 조회
+     * @param context
+     * @param handler
+     */
+    public static void getRequestMyInfo(Context context, String token, final  JsonResponsHandler handler ){
+
+        // 서버 - 클리이언트 (앱)
+
+
+        OkHttpClient client = new OkHttpClient();
+
+        /**
+         * 요정 정보 생성
+         */
+        // URL 설정 => 목적지 설정
+        //HttpUrl url = HttpUrl.parse(BASE_URL + "/info/bank");
+        //url.newBuilder();
+        HttpUrl.Builder urlBulder = HttpUrl.parse(BASE_URL + "/v2/me_info") .newBuilder();
+
+        // Get, DELETE 메소드 는 필요 파라임터 url 에 담아줘야 함. 이 담는  과정을 쉽게 해줄려고 사용.
+
+        // 실제로 서버에 접근하는 URL
+        final String requestUrl = urlBulder.build().toString();
+
+        // 완성된 url 로 접근하는 request를 생성
+        Request request = new Request.Builder()
+                            .header("X-Http-Token", token)
+                            .url(requestUrl) //POST를 추가하지 않으면 get을 보내짐
+                            .build();
+
+        /**
+         * 전송
+         */
+        // 만들어진 Request를 실제로 서버에 요청
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse( Call call, Response response) throws IOException {
+                String responseContext = response.body().string();
+
+                Log.d("서버 응답 내용", responseContext);
+
+                try {
+                    // String -> JSON 변환
+                    JSONObject json = new JSONObject(responseContext);
+
+                    if(handler != null){
+
+                        // 화면에 처리하는 로직 있으면 실행
+                        handler.onResponse(json);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+    }
+
+
 }

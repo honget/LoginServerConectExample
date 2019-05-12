@@ -1,6 +1,7 @@
 package com.example.loginserverconectexample;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -78,10 +79,13 @@ public class LoginActivity extends BaseActivity {
 
                                             //자동 로그인 토큰 저장
                                             ContextUtill.setUserToken(mContext, token);
-
-
-
                                         }
+
+                                        Intent intent = new Intent(mContext, MainActivity.class);
+                                        intent.putExtra("USER_TOKEN", token);
+                                        startActivity(intent);
+
+                                        finish();
 
                                     } else {
                                       // 로그인 실패 원인 리턴
